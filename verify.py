@@ -39,7 +39,7 @@ def report(label, eval_path, run_path):
 if __name__ == "__main__":
     print("Cournot-Cold 1.7B — verifying the model card's numbers")
     pub = report("PUBLISHED (headline, contamination-free)", "eval/published_eval.json", "forecasts/published.jsonl")
-    report("DEV (iteration only)", "eval/bakeoff_3000.json", "forecasts/scalar_dev.jsonl")
+    report("DEV (iteration only)", "eval/bakeoff_3000.json", "forecasts/scalar_tfull.jsonl")
     print("\nTRANSFER — measured on this model (README: What this model cannot do)")
     kq = {q["question_id"]: q for q in json.load(open("eval/kalshi_score_778.json", encoding="utf-8"))["questions"]}
     kf = load("forecasts/kalshi_transfer.jsonl")
