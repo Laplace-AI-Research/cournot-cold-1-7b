@@ -11,19 +11,19 @@ tags:
 library_name: peft
 pipeline_tag: text-classification
 model-index:
-  - name: Cournot-Cold 1.7B
+  - name: Tarot-Draw 1.7B
     results:
       - task: {type: text-classification, name: Binary event forecasting}
-        dataset: {type: manifold, name: "Cournot published split (contamination-free, n=277)"}
+        dataset: {type: manifold, name: "Tarot published split (contamination-free, n=277)"}
         metrics:
           - {type: brier, value: 0.2030, name: Brier score}
           - {type: calibration, value: 0.0042, name: Murphy calibration}
           - {type: resolution, value: 0.0518, name: Murphy resolution}
 ---
 
-# Cournot-Cold 1.7B
+# Tarot-Draw 1.7B
 
-**The small end of the Cournot-Cold ladder.** It answers the same interface as
+**The small end of the Tarot-Draw ladder.** It answers the same interface as
 the 8B and 4B, on a base model 4.7× smaller than the flagship.
 
 ```
@@ -31,17 +31,17 @@ input:  question + resolution criteria + resolution date + as_of
 output: p ∈ [0,1]
 ```
 
-![Cournot-Cold 1.7B architecture](assets/architecture.svg)
+![Tarot-Draw 1.7B architecture](assets/architecture.svg)
 
-**Weights:** [`Laplace-AI-Research/cournot-cold-1-7b`](https://huggingface.co/Laplace-AI-Research/cournot-cold-1-7b)
+**Weights:** [`Laplace-AI-Research/tarot-draw-1-7b`](https://huggingface.co/Laplace-AI-Research/tarot-draw-1-7b)
 on the Hugging Face Hub — LoRA adapter.
-**Larger siblings:** [`Cournot-Cold 4B`](https://huggingface.co/Laplace-AI-Research/cournot-cold-4b)
-and [`Cournot-Cold 8B`](https://huggingface.co/Laplace-AI-Research/cournot-cold-8b)
+**Larger siblings:** [`Tarot-Draw 4B`](https://huggingface.co/Laplace-AI-Research/tarot-draw-4b)
+and [`Tarot-Draw 8B`](https://huggingface.co/Laplace-AI-Research/tarot-draw-8b)
 — same 81,870 questions, same targets, same seed, same footing. **Take the 4B
 unless it will not fit**: it ties the 8B and beats this model by
 +0.0119 Brier [+0.0080, +0.0158] on the dev split. See **Training variance**
 below before reading that interval as tight.
-**Evidence:** [`Laplace-AI-Research/cournot-cold-1-7b`](https://github.com/Laplace-AI-Research/cournot-cold-1-7b)
+**Evidence:** [`Laplace-AI-Research/tarot-draw-1-7b`](https://github.com/Laplace-AI-Research/tarot-draw-1-7b)
 on GitHub — the eval splits behind every claim, this model's raw forecasts
 (including the venue transfers where it *failed*), the metric code, and
 `verify.py`, which recomputes every number below without a model or a GPU.
@@ -53,11 +53,11 @@ No evidence, no retrieval, no market price. A question and a date, and a number.
 
 **It is worse than the 4B, measurably, and that is the point of it existing.**
 
-| | dev Brier (n=3,000) | vs Cournot-Cold 4B |
+| | dev Brier (n=3,000) | vs Tarot-Draw 4B |
 |---|---:|---|
-| Cournot-Cold 8B | 0.1674 | — |
-| Cournot-Cold 4B | 0.1684 | — |
-| **Cournot-Cold 1.7B** | **0.1803** | **+0.0119 [+0.0080, +0.0158], significant** |
+| Tarot-Draw 8B | 0.1674 | — |
+| Tarot-Draw 4B | 0.1684 | — |
+| **Tarot-Draw 1.7B** | **0.1803** | **+0.0119 [+0.0080, +0.0158], significant** |
 
 Paired, question-clustered bootstrap, 10,000 resamples, seed 20260822.
 
@@ -136,9 +136,9 @@ than any one of them.
 
 | dev, n=3,000 | calibration ↓ | resolution ↑ |
 |---|---:|---:|
-| Cournot-Cold 8B | 0.0010 | 0.0718 |
-| Cournot-Cold 4B | 0.0007 | 0.0708 |
-| Cournot-Cold 1.7B | 0.0004 | 0.0593 |
+| Tarot-Draw 8B | 0.0010 | 0.0718 |
+| Tarot-Draw 4B | 0.0007 | 0.0708 |
+| Tarot-Draw 1.7B | 0.0004 | 0.0593 |
 
 Across a **4.7× parameter range**, calibration is flat — the differences are well
 inside the ±0.003 seed-noise floor we measured. Every point of the degradation is
@@ -356,7 +356,7 @@ To regenerate those forecasts from the weights instead:
 
 ```bash
 uv run python scripts/scalar_score.py \
-  --adapter Laplace-AI-Research/cournot-cold-1-7b \
+  --adapter Laplace-AI-Research/tarot-draw-1-7b \
   --base-model Qwen/Qwen3-1.7B \
   --set eval/published_eval.json \
   --out published.jsonl \
@@ -390,9 +390,9 @@ reproducible from the files here or is stated as an unverifiable limitation.
 
 | | parameters | dev Brier | use it when |
 |---|---:|---:|---|
-| [Cournot-Cold 8B](https://huggingface.co/Laplace-AI-Research/cournot-cold-8b) | 8B | 0.1674 | you want the best number |
-| [Cournot-Cold 4B](https://huggingface.co/Laplace-AI-Research/cournot-cold-4b) | 4B | 0.1684 | almost always — it ties the 8B |
-| **Cournot-Cold 1.7B** | **1.7B** | **0.1803** | the 4B will not fit |
+| [Tarot-Draw 8B](https://huggingface.co/Laplace-AI-Research/tarot-draw-8b) | 8B | 0.1674 | you want the best number |
+| [Tarot-Draw 4B](https://huggingface.co/Laplace-AI-Research/tarot-draw-4b) | 4B | 0.1684 | almost always — it ties the 8B |
+| **Tarot-Draw 1.7B** | **1.7B** | **0.1803** | the 4B will not fit |
 
 All three share one corpus, one seed, one learning rate and one footing. The only
 variable is parameter count.
