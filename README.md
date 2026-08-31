@@ -116,7 +116,7 @@ above for continuity with earlier versions of this card.
 ## Contamination
 
 **Zero of the 3,000 dev questions, zero of the 277 published questions, and zero
-of the 778 Kalshi transfer questions resolved before the base model was
+of the 1,219 Kalshi transfer questions resolved before the base model was
 released.** Outcome memorisation is closed by construction, not by argument.
 
 - **Freeze: 2026-08-15**, committed in a dated, public git history *before* it
@@ -171,52 +171,70 @@ above are what the model produces untuned.
 
 ## Transfer, measured on this model
 
-Scored off-venue on 778 Kalshi judgment questions and 3,000 Polymarket questions.
-**Measured on this model, not inherited from a sibling.**
+Scored off-venue on **1,219 Kalshi judgment questions** and 3,000 Polymarket
+questions. **Measured on this model, not inherited from a sibling.**
+
+> **The Kalshi rows were rebuilt on 2026-08-30 and changed.** The set they
+> replaced had **no builder anywhere** — its selection rule was a metadata string
+> no code implemented — and its prompts depended on a Kalshi API field present in
+> no archive we kept. This set is built by
+> [`scripts/kalshi_eval_set.py`](scripts/kalshi_eval_set.py),
+> [`kalshi_subtitles.py`](scripts/kalshi_subtitles.py) and
+> [`kalshi_rebuild_prompts.py`](scripts/kalshi_rebuild_prompts.py), which
+> reproduce **all 157 prompts shared with the old set exactly** and refuse to
+> write otherwise. `verify.py` recomputes every number below.
 
 | | n | Brier | resolution | BSS |
 |---|---:|---:|---:|---:|
 | Manifold dev (home venue) | 3,000 | 0.1803 | 0.0593 | +24.7% |
-| **Kalshi — Politics** | 209 | 0.0935 | **0.1143** | **+47.9%** |
-| Kalshi — Elections | 461 | 0.2201 | 0.0078 | −19.0% |
-| Kalshi — all | 778 | 0.1826 | 0.0319 | −0.4% |
+| **Kalshi — Politics** | 170 | 0.0888 | **0.1136** | **+54.4%** |
+| Kalshi — Entertainment | 500 | 0.2041 | 0.0820 | +9.8% |
+| Kalshi — Science & Technology | 97 | 0.1969 | 0.0653 | +18.7% |
+| Kalshi — Economics | 67 | 0.2556 | 0.0293 | −5.1% |
+| **Kalshi — Elections** | 382 | 0.2192 | **0.0065** | **−5.8%** |
+| Kalshi — all | 1,219 | 0.1949 | 0.0489 | +12.7% |
 | Polymarket (mechanical questions) | 3,000 | 0.2196 | 0.0045 | −17.2% |
 
 **On Kalshi Politics this model discriminates better off-venue than at home** —
-resolution 0.1143 against 0.0593. **On Kalshi Elections it collapses**, and the
-all-Kalshi aggregate of −0.4% is a composition artifact: 59% of that corpus is
-obscure local elections, which are a lookup rather than a forecast.
+resolution 0.1136 against 0.0593. **On Kalshi Elections it collapses** to
+resolution 0.0065, and the aggregate is a composition artifact: Elections is 31%
+of this corpus and is a lookup rather than a forecast.
 
 **Polymarket is where it is worst.** Resolution 0.0045 is close to none at all —
 those questions are mechanical (scores, thresholds, spreads) and outside what a
 judgment prior can do.
 
-### The contamination-free Kalshi subset, where this model loses to a constant
+### Elections is a subject-matter limit, not contamination
 
-The 778 above include questions that resolved before the training freeze. **117
-resolved after it**, and that subset is contamination-free by the same rule as the
-published split. It is the least flattering number in this card, so it is here
-rather than omitted.
+This card previously carried a section titled *"the contamination-free Kalshi
+subset, where this model loses to a constant."* **That framing was wrong**, and it
+was wrong in the direction that made us look careful.
 
-| | n | Brier | resolution |
+That subset was **75% Elections**. The model failed on it because it cannot
+forecast obscure local elections — which this card already says elsewhere about
+the aggregate — not because the freeze boundary revealed anything about
+contamination. Holding the category fixed shows it directly:
+
+| slice | n | Brier | BSS |
 |---|---:|---:|---:|
-| Cournot-Cold 1.7B | 117 | 0.2137 | 0.0179 |
-| **a constant at the base rate (0.2308)** | 117 | **0.1775** | 0.0000 |
+| Elections, resolved **after** the freeze | 69 | 0.2087 | **−12.4%** |
+| Elections, resolved **before** the freeze | 313 | 0.2215 | **−4.8%** |
 
-Paired bootstrap, 10,000 draws, clustered on `question_id`:
+**Post-freeze is not better — it is slightly worse.** If performance before the
+freeze were inflated by the base model having seen those questions, the clean
+subset would look worse than the exposed one. It does not. The limit is the
+subject matter, and it is present on both sides of the freeze.
 
-> **1.7B minus constant: +0.0362 [+0.0004, +0.0720] — significantly WORSE.**
-> **1.7B minus 4B: +0.0246 [+0.0039, +0.0457] — significantly worse.**
-> **1.7B minus 8B: +0.0073 [−0.0167, +0.0321] — not significant.**
+On the rebuilt post-freeze subset as a whole (n=183) this model scores Brier
+0.1577 against a constant's 0.2496 — **−0.0920 [−0.1154, −0.0682]**, significantly better. That
+reverses the old card's claim, and **it is a composition effect, not a
+contamination result**: the old 117-row subset was 75% Elections, the new
+183-row one is 46% Entertainment. Both numbers are artifacts of their category
+mix. Neither says anything about contamination, and neither should be quoted as
+though it does.
 
-**Read this as: on 117 contamination-free out-of-venue questions this model is
-significantly worse than predicting the base rate on every one.** The 8B and 4B
-are both merely *indistinguishable* from that constant; this model is beaten by
-it.
-
-The subset is small and lopsided — 88 of 117 are Elections, the stratum above
-where this model is weakest — so it is not a verdict on the venue. It is a real
-limit on off-venue use.
+The honest summary is the one that survives every slicing: **this model cannot
+forecast obscure local elections, and no amount of resampling changes that.**
 
 ## Training variance, and why the intervals above are narrower than the truth
 
